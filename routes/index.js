@@ -22,6 +22,35 @@ var fbApp = FB.extend({
     appSecret: 'b7bc77c3921e94fdccdb2f8635557c76',
     version: '2.9'
 })
+
+router.post('/insert_doctor',function(req,res,next){
+    
+ 
+    var _id=req.body._id;
+    var email=req.body.email;
+    var password=req.body.password;
+    var name=req.body.name;
+    var fcm_token=req.body.fcm_token
+    var item={_id:_id,email:email,password:password,name:name,fcm_token:fcm_token};
+    
+
+    
+    mongo.connect(url,function(err,db){
+        
+        assert.equal(null,err);
+        db.collection('doctors').insertOne(item,function(err,result){
+            
+            assert.equal(null,err);
+            console.log("item inserted");
+            console.log(result);
+            db.close();
+            
+        });
+        
+    })
+    
+    
+});
 router.post('/update_patient',function(req,res,next){
     
     var result=[];
@@ -60,6 +89,8 @@ router.post('/update_patient',function(req,res,next){
     
     
 });
+
+
 router.get('/storefeeds',function(req,res,next){
     
     mongo.connect(url,function(err,db){
@@ -91,6 +122,7 @@ router.get('/storefeeds',function(req,res,next){
 //                        console.log(email);
                         
                         var feedData = res.feed.data;
+                        console.log(feedData);
                         var newFeeds = [];
                      
                         for (var index in feedData) {
@@ -515,6 +547,8 @@ router.get('/getfeeds',function(req,res,next){
         {
             console.log(item);
             var feedid=item._id;
+            var patientid=item.userid;
+        
          
             
             var patientemail=item.email;
@@ -545,8 +579,6 @@ router.get('/getfeeds',function(req,res,next){
                 });  
                 
                 
-            //db.collection('feed').update({ email_flag: 1 });
-//                console.log(error);
         });
           
      }
