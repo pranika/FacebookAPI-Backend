@@ -14,10 +14,12 @@
     "facebook-nodejs-sdk": "^0.1.1",
     "facebook-sdk": "^0.3.2",
     "fb": "^2.0.0",
+    "fcm-node": "^1.2.0",
     "moment": "^2.18.1",
     "mongodb": "^2.2.30",
     "morgan": "~1.8.1",
     "pug": "~2.0.0-beta11",
+    "sails-mongo": "^0.12.2",
     "sendgrid": "^5.2.0",
     "serve-favicon": "~2.4.2"
   }
