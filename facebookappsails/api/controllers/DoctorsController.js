@@ -4,8 +4,21 @@
  * @description :: Server-side logic for managing doctors
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
+var http = require('http');
 module.exports = {
+
+    getNPIDoctors: function (req, res) {
+
+        http.get('http://npiregistry.cms.hhs.gov/api?number=1023053725', (response) => {
+            const statusCode = response.statusCode;
+            const contentType = response.headers['content-type'];
+
+
+
+        })
+
+        res.send(response);
+    },
 
     get: function (req, res) {
         Doctors.find().exec(function (err, doctors) {

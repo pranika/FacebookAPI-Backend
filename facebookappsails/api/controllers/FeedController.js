@@ -9,7 +9,11 @@
 
 
 
+//Pranika key
 var sg = require('sendgrid')("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");
+
+//Bhupesh Key
+//var sg = require('sendgrid')("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");
 var connect = require('connect');
 var FB = require('fb');
 var cookieParser = require('cookie-parser');
@@ -296,7 +300,7 @@ module.exports = {
 
 
 
-                    if (substitutepatient == undefined && doctor != undefined) {
+                    if (selfpatientid != undefined && doctor != undefined) {
 
                         Patients.find({
                             id: selfpatientid,
@@ -307,7 +311,7 @@ module.exports = {
                             console.log(doctor);
 
                             Feed.find({
-                                userid: patients[0].id
+                                userid: selfpatientid
                             }).exec(function (err, feeditem) {
 
 
@@ -358,6 +362,20 @@ module.exports = {
                                     "no. of posts": frequency_of_posts
 
                                 });
+
+                                //******************Make PDF*************
+                                sails.hooks.pdf.make(
+                                    "testpdf", {
+                                        feeds: feedarray
+                                    }, {
+                                        output: 'assets/pdfs/mypdf.pdf'
+                                    },
+                                    function (err, result) {
+                                        console.log(err, result);
+                                    }
+                                );
+
+                                //****************mAKE PDF**************
                                 console.log(myJsonString);
                                 res.send(myJsonString);
                             })
@@ -442,6 +460,7 @@ module.exports = {
 
     showfeedsweek: function (req, res) {
         var feedarray = [];
+        var feedweekfull = [];
         var date = [];
         var current = [];
 
@@ -468,7 +487,7 @@ module.exports = {
                     var patientfeedid = feeds[i].userid;
 
 
-                    if (substitutepatient == undefined && doctor != undefined) {
+                    if (selfpatientid != undefined && doctor != undefined) {
 
                         Patients.find({
                             id: selfpatientid,
@@ -477,7 +496,7 @@ module.exports = {
                             console.log(doctor);
 
                             Feed.find({
-                                userid: patients[0].id
+                                userid: selfpatientid
                             }).exec(function (err, feeditem) {
 
 
@@ -521,21 +540,145 @@ module.exports = {
 
 
                                 }
+                                // ***********************************************************
 
-                                var frequency_of_posts = feedarray.length;
-                                var myJsonString = JSON.stringify({
-                                    "week feed": feedarray,
-                                    "no. of posts": frequency_of_posts
+                                var newCursor = null;
+
+                                Feed.native(function (err, feedNative) {
+                                    if (err) return res.serverError(err);
+
+                                    var options = {
+                                        "sort": "createdtime"
+                                    }
+
+                                    newCursor = feedNative.aggregate({
+                                        $match: {
+                                            userid: selfpatientid
+                                        }
+
+                                    }, {
+                                        $group: {
+                                            _id: {
+                                                year: {
+                                                    $year: "$createdtime"
+                                                },
+                                                month: {
+                                                    $month: "$createdtime"
+                                                },
+                                                day: {
+                                                    $dayOfMonth: "$createdtime"
+                                                },
+                                                date: new Date(Date.UTC('$day', '$month', '$year'))
+                                            },
+                                            count: {
+                                                $sum: 1
+                                            }
+                                        }
+                                    }, {
+                                        $sort: {
+                                            _id: 1
+                                        }
+                                    }, options);
 
                                 });
 
-                                res.send(myJsonString);
+                                var arrayweek = [];
+                                newCursor.forEach(function (doc, err) {
+                                    //  assert.equal(null, err);
+                                    console.log(doc);
+                                    arrayweek.push(doc);
+
+                                    var year = doc._id.year;
+                                    var month = doc._id.month;
+                                    var day = doc._id.day;
+
+                                    var datefill = doc._id.year + '-' + doc._id.month + '-' + doc._id.day;
+                                    var dateiso = new Date(datefill)
+                                    var map = {
+                                        date: dateiso.toISOString(),
+                                        count: doc.count
+                                    };
+
+                                    feedweekfull.push(map);
+
+                                }, function () {
+                                    var newvalue = [];
+                                    var singlevalue = [];
+                                    feedweekfull.forEach(function (singlefeed, err) {
+                                        // console.log(singlefeed);
+                                        //
+                                        //    var date = new Date(singlefeed.get('date'));
+                                        var datevalue = singlefeed.date
+
+                                        var count = singlefeed.count
+                                        //  console.log(datevalue);
+                                        //    console.log(count);
+
+                                        var weekjson = JSON.stringify({
+                                            "date": datevalue,
+                                            "count": count
+                                        });
+
+                                        //**************************************
+                                        var currentdateresult = new Date();
+                                        var currentday = currentdateresult.getDate();
+                                        var currentmonth = currentdateresult.getMonth();
+                                        var currrentyear = currentdateresult.getYear();
+                                        var weekdiff = 604800;
+                                        var epoch2 = moment(currentdateresult).unix();
+
+                                        var epoch3 = moment(datevalue).unix();
+
+
+                                        var diff = epoch2 - epoch3;
+                                        var feeds = parseInt(diff) < parseInt(weekdiff);
+
+
+                                        if (feeds == true) {
+
+
+                                            newvalue.push(singlefeed);
+
+                                        }
+                                        //******************************************************
+
+
+
+                                    });
+                                    console.log(newvalue);
+                                    //   var b = JSON.stringify(newvalue);
+                                    //   var str = b.replace(/\\/g, '');
+                                    //    console.log(str);
+
+                                    var frequency_of_posts = feedarray.length;
+
+
+
+
+
+
+
+
+                                    // ***********************************************************
+
+
+
+
+                                    var frequency_of_posts = feedarray.length;
+                                    var myJsonString = JSON.stringify({
+                                        "week feed": feedarray,
+                                        "no. of posts": frequency_of_posts,
+                                        "graph": newvalue
+
+                                    });
+
+                                    res.send(myJsonString);
+                                })
+
+
+
                             })
-
-
-
                         })
-
 
 
 
@@ -579,15 +722,141 @@ module.exports = {
 
                                 }
                             }
-                            var frequency_of_posts = feedarray.length;
-                            var myJsonString = JSON.stringify({
-                                "week feed": feedarray,
-                                "no. of posts": frequency_of_posts
+
+
+                            // ***********************************************************
+
+                            var newCursor = null;
+
+                            Feed.native(function (err, feedNative) {
+                                if (err) return res.serverError(err);
+
+                                var options = {
+                                    "sort": "createdtime"
+                                }
+
+                                newCursor = feedNative.aggregate({
+                                    $match: {
+                                        userid: substitutepatient
+                                    }
+
+                                }, {
+                                    $group: {
+                                        _id: {
+                                            year: {
+                                                $year: "$createdtime"
+                                            },
+                                            month: {
+                                                $month: "$createdtime"
+                                            },
+                                            day: {
+                                                $dayOfMonth: "$createdtime"
+                                            },
+                                            date: new Date(Date.UTC('$day', '$month', '$year'))
+                                        },
+                                        count: {
+                                            $sum: 1
+                                        }
+                                    }
+                                }, {
+                                    $sort: {
+                                        _id: 1
+                                    }
+                                }, options);
+
                             });
 
-                            res.send(myJsonString);
+                            var arrayweek = [];
+                            newCursor.forEach(function (doc, err) {
+                                //  assert.equal(null, err);
+                                console.log(doc);
+                                arrayweek.push(doc);
+
+                                var year = doc._id.year;
+                                var month = doc._id.month;
+                                var day = doc._id.day;
+
+                                var datefill = doc._id.year + '-' + doc._id.month + '-' + doc._id.day;
+                                var dateiso = new Date(datefill)
+                                var map = {
+                                    date: dateiso.toISOString(),
+                                    count: doc.count
+                                };
+
+                                feedweekfull.push(map);
+
+                            }, function () {
+                                var newvalue = [];
+                                var singlevalue = [];
+                                feedweekfull.forEach(function (singlefeed, err) {
+                                    // console.log(singlefeed);
+                                    //
+                                    //    var date = new Date(singlefeed.get('date'));
+                                    var datevalue = singlefeed.date
+
+                                    var count = singlefeed.count
+                                    //  console.log(datevalue);
+                                    //    console.log(count);
+
+                                    var weekjson = JSON.stringify({
+                                        "date": datevalue,
+                                        "count": count
+                                    });
+
+                                    //**************************************
+                                    var currentdateresult = new Date();
+                                    var currentday = currentdateresult.getDate();
+                                    var currentmonth = currentdateresult.getMonth();
+                                    var currrentyear = currentdateresult.getYear();
+                                    var weekdiff = 604800;
+                                    var epoch2 = moment(currentdateresult).unix();
+
+                                    var epoch3 = moment(datevalue).unix();
 
 
+                                    var diff = epoch2 - epoch3;
+                                    var feeds = parseInt(diff) < parseInt(weekdiff);
+
+
+                                    if (feeds == true) {
+
+
+                                        newvalue.push(singlefeed);
+
+                                    }
+                                    //******************************************************
+
+
+
+                                });
+                                console.log(newvalue);
+                                //   var b = JSON.stringify(newvalue);
+                                //   var str = b.replace(/\\/g, '');
+                                //    console.log(str);
+
+                                var frequency_of_posts = feedarray.length;
+
+
+
+
+
+
+
+
+                                // ***********************************************************
+
+
+                                var frequency_of_posts = feedarray.length;
+                                var myJsonString = JSON.stringify({
+                                    "week feed": feedarray,
+                                    "graph": newvalue,
+                                    "no. of posts": frequency_of_posts
+                                });
+
+                                res.send(myJsonString);
+
+
+                            })
                         })
 
 
@@ -636,7 +905,7 @@ module.exports = {
                     var patientfeedid = feeds[i].userid;
 
 
-                    if (substitutepatient == undefined && doctor != undefined) {
+                    if (selfpatientid != undefined && doctor != undefined) {
 
                         Patients.find({
                             id: selfpatientid,
@@ -645,7 +914,7 @@ module.exports = {
                             console.log(doctor);
 
                             Feed.find({
-                                userid: patients[0].id
+                                userid: selfpatientid
                             }).exec(function (err, feeditem) {
 
 
@@ -747,9 +1016,14 @@ module.exports = {
 
                                 }
                             }
+
+
+
+
                             var frequency_of_posts = feedarray.length;
                             var myJsonString = JSON.stringify({
                                 "year feed": feedarray,
+
                                 "no. of posts": frequency_of_posts
                             });
 
@@ -757,6 +1031,7 @@ module.exports = {
 
 
                         })
+
 
 
 

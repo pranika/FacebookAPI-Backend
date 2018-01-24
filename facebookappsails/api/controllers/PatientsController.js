@@ -30,7 +30,6 @@ module.exports = {
 
         })
 
-
     },
 
     updatePatient: function (req, res, callback) {
@@ -59,6 +58,54 @@ module.exports = {
     },
     update_status: function (req, res) {
 
+
+    },
+
+    getAffectedPatients: function (req, res, callback) {
+
+        var affected_patients = [];
+        var doc_patients = [];
+
+        var docid = req.param('doctorid');
+
+
+        Feed.find({
+            "detect_flag": 1
+        }).exec(function (err, affected_feeds) {
+
+            for (var j = 0; j < affected_feeds.length; j++) {
+                affected_patients.push(affected_feeds[j].userid);
+
+
+            }
+            var res_length = affected_patients.length;
+            for (var i = 0; i < affected_patients.length; i++) {
+
+                console.log(affected_patients[i]);
+                console.log(docid);
+
+                Patients.find({
+                    "id": affected_patients[i],
+                    "doctor": docid
+                }).exec(function (err, listed_patients) {
+                    if (err) res.send(err);
+                    else {
+                        for (var k = 0; k < listed_patients.length; k++) {
+                            doc_patients.push(listed_patients[k]);
+                            res_length--;
+
+                        }
+                    }
+                    console.log(res_length);
+                    if (res_length == 0)
+                        res.send(doc_patients);
+
+                })
+
+            }
+
+
+        })
 
     }
 

@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>TEST</title>
+</head>
+
+<body>
+    <div>
+        <h3>Month Feeds of
+            <%= feeds[0].name %>
+        </h3>
+        <% for (var index in feeds) { %>
+            <% var pos = index + 1 %>
+                <p>
+                    <%= pos %>. <b>Feed:</b>
+                        <%= feeds[index].message || feeds[index].story %><br> <b>Created Time:</b>
+                            <%= feeds[index].createdtime %><br>
+                </p>
+                <% } %>
+    </div>
+</body>
+
+</html>
