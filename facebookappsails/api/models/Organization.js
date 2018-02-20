@@ -28,8 +28,8 @@ module.exports = {
 
         fcm_token: {
 
-            type: 'string',
-            required: 'true'
+            type: 'string'
+
         },
 
         patients: {
