@@ -6,6 +6,7 @@
   "keywords": [],
   "dependencies": {
     "ejs": "2.3.4",
+    "file-base64": "^1.0.0",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.0.0",
     "grunt-contrib-coffee": "1.0.0",
@@ -26,7 +27,8 @@
     "sails-disk": "~0.10.9",
     "sails-hook-pdf": "0.0.7",
     "sails-mongo": "^0.12.2",
-    "sg": "^0.1.0"
+    "sg": "^0.1.0",
+    "skipper": "^0.8.4"
   },
   "scripts": {
     "debug": "node debug app.js",

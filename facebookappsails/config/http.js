@@ -22,6 +22,9 @@ module.exports.http = {
   ****************************************************************************/
 
   middleware: {
+	bodyParser: require('skipper')({
+      maxWaitTimeBeforePassingControlToApp: 1000
+    })
 
   /***************************************************************************
   *                                                                          *
@@ -30,10 +33,11 @@ module.exports.http = {
   *                                                                          *
   ***************************************************************************/
 
-    // order: [
+   //  order: [
     //   'startRequestTimer',
     //   'cookieParser',
     //   'session',
+//	'skipper'
     //   'myRequestLogger',
     //   'bodyParser',
     //   'handleBodyParserError',
@@ -46,8 +50,11 @@ module.exports.http = {
     //   'favicon',
     //   '404',
     //   '500'
-    // ],
-
+     //],
+	// Configure Skipper
+  //  skipper: require('skipper')({
+    //  maxWaitTimeBeforePassingControlToApp: 1000
+   // })
   /****************************************************************************
   *                                                                           *
   * Example custom middleware; logs each request to the console.              *

@@ -46,6 +46,7 @@ module.exports.routes = {
 
     '/doctors/getDoctors': 'DoctorsControllers.getDoctors',
     '/doctors/getorganizationid': 'DoctorsControllers.getorganizationid',
+    '/doctors/signUpDoctors': 'DoctorsControllers.signUpDoctors',
     '/patients/getPatients': 'PatientsControllers.getPatients',
     '/patients/updatePatients': 'PatientsControllers.updatePatients',
     '/feed/getFeeds': 'FeedControllers.getFeeds',

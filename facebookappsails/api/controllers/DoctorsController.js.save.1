@@ -18,19 +18,10 @@ module.exports = {
 		},function (err, file) {
 
             if (err) console.log(err)
-            //var jsonobj = JSON.parse(file);
-//	    for (var i=0; i<jsonobj['UploadedFileMetadata'].length; i++){
-    // here jsonObject['sync_contact_list'][i] is your current "bit"
-	
+
 		console.log({"status": "file uploaded successfully",
                 "file": file[0].fd});
-        
-//}		
-//base64.encode('file.filename', function(err, base64String) {
- // console.log(base64String);
-//});
 
-        //var file = req.files.uploaded_file;
       var bitmap = fs.readFileSync(file[0].fd,'base64');
 	console.log(new Buffer(bitmap).toString('base64'));
         // convert binary data to base64 encoded string

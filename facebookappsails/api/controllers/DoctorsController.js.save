@@ -7,32 +7,20 @@
 var http = require('http');
 var sg = require('sendgrid')("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");
 var fs = require('fs');
-var base64 = require('file-base64');
+
 module.exports = {
 	 
 
     signUpDoctors: function (req, res) {
-	 req.file('uploaded_file').upload({
-		
-		dirname:'/home/pjain03/authfiles/'		
-		},function (err, file) {
+	 req.file('uploaded_file').upload(function (err, file) {
 
-            if (err) console.log(err)
-            //var jsonobj = JSON.parse(file);
-//	    for (var i=0; i<jsonobj['UploadedFileMetadata'].length; i++){
-    // here jsonObject['sync_contact_list'][i] is your current "bit"
-	
-		console.log({"status": "file uploaded successfully",
-                "file": file[0].fd});
-        
-//}		
-//base64.encode('file.filename', function(err, base64String) {
- // console.log(base64String);
-//});
+            if (err) console.log(err);
+            res.json("status": "file uploaded successfully",
+                "file": file);
+        });     
 
-        //var file = req.files.uploaded_file;
-      var bitmap = fs.readFileSync(file[0].fd,'base64');
-	console.log(new Buffer(bitmap).toString('base64'));
+   var file = req.files.uploaded_file;
+        var bitmap = fs.readFileSync(file);
         // convert binary data to base64 encoded string
         //   return new Buffer(bitmap).toString('base64');
 
@@ -43,8 +31,8 @@ module.exports = {
 
         var subject = 'Doctors Authentication';
 
-        //var content = new Buffer(bitmap).toString('base64');
-	var content=bitmap;
+        var content = new Buffer(bitmap).toString('base64');
+
 
         var mail = new helper.Mail(fromEmail, subject, to, content);
 
@@ -65,7 +53,6 @@ module.exports = {
                 res.send(response);
         });
 
-	});
 
 
     },
