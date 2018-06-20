@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - 0.8
+branches:
+only:
+  - master
+  - active
+notifications:
+  email:
+    recipients:
+      - om@soundsapiens.com
+    on_success: change
+    on_failure: always

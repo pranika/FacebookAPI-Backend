@@ -1,0 +1,96 @@
+{
+  "data": {
+    "doctors": [],
+    "organization": [],
+    "Patients": [],
+    "patients": []
+  },
+  "schema": {
+    "doctors": {
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "organization": {
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "Patients": {
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "patients": {
+      "organizationid": {
+        "type": "string"
+      },
+      "doctorid": {
+        "type": "string"
+      },
+      "case_history": {
+        "type": "string"
+      },
+      "level": {
+        "type": "string"
+      },
+      "email": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "gender": {
+        "type": "string"
+      },
+      "age_range": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    }
+  },
+  "counters": {
+    "doctors": {},
+    "organization": {},
+    "patients": {},
+    "Patients": {}
+  }
+}
